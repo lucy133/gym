@@ -6,884 +6,360 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Train</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ink: #1a1a18;
-    --ink-light: #6b6b67;
-    --ink-faint: #c8c8c4;
-    --paper: #fafaf8;
-    --paper-warm: #f4f3ef;
-    --accent: #2d6a4f;
-    --accent-light: #e8f0ec;
-    --accent-warm: #c9a96e;
-    --danger: #c0392b;
-    --safe: inset 0 0 0 1px rgba(0,0,0,0.07);
-    --r: 16px;
-    --r-sm: 10px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-  html, body {
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    line-height: 1.5;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ---- SCREENS ---- */
-  .screen { display: none; min-height: 100vh; padding-bottom: 40px; }
-  .screen.active { display: block; }
-
-  /* ---- HEADER ---- */
-  .app-header {
-    padding: 56px 24px 24px;
-    position: sticky;
-    top: 0;
-    background: var(--paper);
-    z-index: 10;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-  }
-  .back-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--accent);
-    font-size: 14px;
-    font-weight: 500;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    margin-bottom: 12px;
-    letter-spacing: 0.01em;
-  }
-  .back-btn svg { width: 16px; height: 16px; }
-  .header-eyebrow {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 4px;
-  }
-  .header-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    line-height: 1.15;
-    color: var(--ink);
-  }
-  .header-subtitle {
-    font-size: 13px;
-    color: var(--ink-light);
-    margin-top: 4px;
-  }
-
-  /* ---- HOME SCREEN ---- */
-  .home-hero {
-    padding: 56px 24px 32px;
-  }
-  .home-greeting {
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 8px;
-  }
-  .home-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 38px;
-    line-height: 1.1;
-    color: var(--ink);
-    margin-bottom: 8px;
-  }
-  .home-title em {
-    font-style: italic;
-    color: var(--accent);
-  }
-  .home-sub {
-    font-size: 14px;
-    color: var(--ink-light);
-    line-height: 1.6;
-  }
-
-  /* ---- WEEK STRIP ---- */
-  .week-section { padding: 0 24px 24px; }
-  .section-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-bottom: 14px;
-  }
-
-  .day-card {
-    background: white;
-    border-radius: var(--r);
-    box-shadow: var(--safe);
-    margin-bottom: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    active: transform 0.1s;
-  }
-  .day-card:active { transform: scale(0.985); }
-  .day-card.rest-card { cursor: default; opacity: 0.6; }
-  .day-card.rest-card:active { transform: none; }
-
-  .day-card-inner {
-    display: flex;
-    align-items: center;
-    padding: 16px 18px;
-    gap: 16px;
-  }
-  .day-badge {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    background: var(--accent-light);
-  }
-  .day-badge.gym { background: var(--accent); }
-  .day-badge.yoga { background: #e8f4f0; }
-  .day-badge.rest { background: var(--paper-warm); }
-  .day-badge-day {
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.7);
-  }
-  .day-badge.yoga .day-badge-day,
-  .day-badge.rest .day-badge-day { color: var(--ink-faint); }
-  .day-badge-abbr {
-    font-family: 'DM Serif Display', serif;
-    font-size: 17px;
-    color: white;
-    line-height: 1;
-  }
-  .day-badge.yoga .day-badge-abbr,
-  .day-badge.rest .day-badge-abbr { color: var(--ink-light); }
-
-  .day-info { flex: 1; min-width: 0; }
-  .day-type {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-bottom: 2px;
-  }
-  .day-name {
-    font-weight: 500;
-    font-size: 15px;
-    color: var(--ink);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .day-meta {
-    font-size: 12px;
-    color: var(--ink-light);
-    margin-top: 1px;
-  }
-  .day-arrow {
-    color: var(--ink-faint);
-    flex-shrink: 0;
-  }
-  .day-arrow svg { width: 18px; height: 18px; }
-
-  /* progress dot */
-  .day-logged {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--accent);
-    flex-shrink: 0;
-    margin-right: -4px;
-  }
-
-  /* ---- STATS ROW ---- */
-  .stats-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    padding: 0 24px 32px;
-  }
-  .stat-card {
-    background: white;
-    border-radius: var(--r-sm);
-    box-shadow: var(--safe);
-    padding: 14px 12px;
-    text-align: center;
-  }
-  .stat-num {
-    font-family: 'DM Serif Display', serif;
-    font-size: 26px;
-    color: var(--ink);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .stat-label {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-  }
-
-  /* ---- SESSION SCREEN ---- */
-  .session-content { padding: 20px 24px 0; }
-
-  .phase-banner {
-    background: var(--accent-light);
-    border-radius: var(--r-sm);
-    padding: 12px 16px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .phase-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-  .phase-text { font-size: 13px; color: var(--accent); font-weight: 500; }
-
-  /* exercise blocks */
-  .block-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin: 24px 0 12px;
-  }
-  .block-label:first-of-type { margin-top: 0; }
-
-  .exercise-card {
-    background: white;
-    border-radius: var(--r);
-    box-shadow: var(--safe);
-    margin-bottom: 10px;
-    overflow: hidden;
-  }
-  .exercise-header {
-    padding: 16px 18px 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .exercise-name {
-    font-weight: 500;
-    font-size: 15px;
-    color: var(--ink);
-    flex: 1;
-  }
-  .exercise-chips {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-top: 6px;
-  }
-  .chip {
-    font-size: 11px;
-    font-weight: 500;
-    background: var(--paper-warm);
-    color: var(--ink-light);
-    padding: 3px 8px;
-    border-radius: 20px;
-  }
-  .chip.highlight { background: var(--accent-light); color: var(--accent); }
-  .exercise-note {
-    font-size: 12px;
-    color: var(--ink-light);
-    line-height: 1.5;
-    padding: 0 18px 14px;
-    border-top: 1px solid var(--paper-warm);
-    padding-top: 10px;
-    display: none;
-  }
-  .exercise-note.open { display: block; }
-
-  /* log section */
-  .log-section {
-    padding: 0 18px 16px;
-    border-top: 1px solid var(--paper-warm);
-  }
-  .log-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
-  }
-  .log-field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .log-field label {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-  }
-  .log-field input {
-    background: var(--paper-warm);
-    border: 1.5px solid transparent;
-    border-radius: 8px;
-    padding: 9px 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--ink);
-    width: 100%;
-    transition: border-color 0.15s;
-    -webkit-appearance: none;
-  }
-  .log-field input:focus {
-    outline: none;
-    border-color: var(--accent);
-    background: white;
-  }
-  .log-field input::placeholder { color: var(--ink-faint); font-weight: 400; }
-
-  .log-save-btn {
-    width: 100%;
-    margin-top: 10px;
-    padding: 11px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    letter-spacing: 0.02em;
-    transition: opacity 0.15s;
-  }
-  .log-save-btn:active { opacity: 0.75; }
-  .log-saved-badge {
-    text-align: center;
-    font-size: 12px;
-    color: var(--accent);
-    font-weight: 500;
-    padding: 6px 0 0;
-    display: none;
-  }
-  .log-saved-badge.show { display: block; }
-
-  /* ---- DRILL CARDS ---- */
-  .drill-card {
-    background: white;
-    border-radius: var(--r);
-    box-shadow: var(--safe);
-    margin-bottom: 10px;
-    padding: 16px 18px;
-  }
-  .drill-name { font-weight: 500; font-size: 15px; color: var(--ink); margin-bottom: 4px; }
-  .drill-duration {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    background: var(--accent-light);
-    color: var(--accent);
-    padding: 3px 8px;
-    border-radius: 20px;
-    margin-bottom: 8px;
-  }
-  .drill-purpose { font-size: 13px; color: var(--ink-light); line-height: 1.55; }
-
-  /* ---- PULLUP PROGRESS SCREEN ---- */
-  .pullup-tracker {
-    background: white;
-    border-radius: var(--r);
-    box-shadow: var(--safe);
-    padding: 20px 20px;
-    margin-bottom: 16px;
-  }
-  .pullup-week-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--paper-warm);
-  }
-  .pullup-week-row:last-child { border-bottom: none; }
-  .pullup-week-label { font-size: 14px; font-weight: 500; color: var(--ink); }
-  .pullup-week-target { font-size: 13px; color: var(--ink-light); }
-  .pullup-week-input {
-    width: 64px;
-    background: var(--paper-warm);
-    border: 1.5px solid transparent;
-    border-radius: 8px;
-    padding: 7px 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--ink);
-    text-align: center;
-    -webkit-appearance: none;
-  }
-  .pullup-week-input:focus { outline: none; border-color: var(--accent); background: white; }
-
-  /* ---- BOTTOM NAV ---- */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: rgba(250,250,248,0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid rgba(0,0,0,0.06);
-    display: flex;
-    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
-    z-index: 100;
-  }
-  .nav-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 0;
-    color: var(--ink-faint);
-    transition: color 0.15s;
-  }
-  .nav-btn.active { color: var(--accent); }
-  .nav-btn svg { width: 22px; height: 22px; }
-  .nav-btn span { font-size: 10px; font-weight: 500; letter-spacing: 0.04em; }
-
-  .screen { padding-bottom: 80px; }
-
-  /* ---- PROGRESS SCREEN ---- */
-  .progress-content { padding: 20px 24px 0; }
-  .progress-empty {
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--ink-light);
-  }
-  .progress-empty-icon { font-size: 36px; margin-bottom: 12px; }
-  .progress-empty p { font-size: 14px; line-height: 1.6; }
-
-  .log-entry {
-    background: white;
-    border-radius: var(--r-sm);
-    box-shadow: var(--safe);
-    padding: 14px 16px;
-    margin-bottom: 8px;
-  }
-  .log-entry-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 6px;
-  }
-  .log-entry-name { font-weight: 500; font-size: 14px; color: var(--ink); }
-  .log-entry-date { font-size: 11px; color: var(--ink-faint); }
-  .log-entry-values { display: flex; gap: 16px; }
-  .log-entry-val { font-size: 13px; color: var(--ink-light); }
-  .log-entry-val strong { color: var(--ink); font-weight: 500; }
-
-  .clear-btn {
-    width: 100%;
-    margin: 16px 0;
-    padding: 12px;
-    background: none;
-    border: 1.5px solid var(--ink-faint);
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--ink-light);
-    cursor: pointer;
-  }
-
-  /* subtle divider */
-  .divider {
-    height: 1px;
-    background: var(--paper-warm);
-    margin: 20px 0;
-  }
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+:root {
+  --ink: #1a1a18;
+  --ink-light: #6b6b67;
+  --ink-faint: #c8c8c4;
+  --paper: #fafaf8;
+  --paper-warm: #f4f3ef;
+  --accent: #2d6a4f;
+  --accent-light: #e8f0ec;
+  --mid-teal: #b2dfdf;
+  --safe: inset 0 0 0 1px rgba(0,0,0,0.07);
+  --r: 16px;
+  --r-sm: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--paper); color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.5; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+.screen { display: none; min-height: 100vh; padding-bottom: 88px; }
+.screen.active { display: block; }
+.app-header { padding: 52px 24px 20px; background: var(--paper); border-bottom: 1px solid rgba(0,0,0,0.06); }
+.back-btn { display: flex; align-items: center; gap: 6px; color: var(--accent); font-size: 14px; font-weight: 500; background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 10px; }
+.back-btn svg { width: 16px; height: 16px; }
+.header-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+.header-title { font-family: 'DM Serif Display', serif; font-size: 28px; line-height: 1.15; }
+.header-subtitle { font-size: 13px; color: var(--ink-light); margin-top: 3px; }
+.home-hero { padding: 52px 24px 28px; }
+.home-greeting { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.home-title { font-family: 'DM Serif Display', serif; font-size: 42px; line-height: 1.05; margin-bottom: 8px; }
+.home-title em { font-style: italic; color: var(--accent); }
+.home-sub { font-size: 14px; color: var(--ink-light); }
+.stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 0 24px 24px; }
+.stat-card { background: white; border-radius: var(--r-sm); box-shadow: var(--safe); padding: 14px 12px; text-align: center; }
+.stat-num { font-family: 'DM Serif Display', serif; font-size: 26px; line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); }
+.week-section { padding: 0 24px 24px; }
+.section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 14px; }
+.day-card { background: white; border-radius: var(--r); box-shadow: var(--safe); margin-bottom: 10px; cursor: pointer; transition: transform 0.15s; }
+.day-card:active { transform: scale(0.985); }
+.day-card.rest-card { cursor: default; opacity: 0.55; }
+.day-card.rest-card:active { transform: none; }
+.day-card-inner { display: flex; align-items: center; padding: 16px 18px; gap: 16px; }
+.day-badge { width: 44px; height: 44px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+.day-badge.gym { background: var(--accent); }
+.day-badge.yoga { background: #d4ede6; }
+.day-badge.rest { background: var(--paper-warm); }
+.day-badge-day { font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.65); }
+.day-badge.yoga .day-badge-day, .day-badge.rest .day-badge-day { color: var(--ink-faint); }
+.day-badge-abbr { font-family: 'DM Serif Display', serif; font-size: 17px; color: white; line-height: 1; }
+.day-badge.yoga .day-badge-abbr, .day-badge.rest .day-badge-abbr { color: var(--ink-light); font-size: 20px; }
+.day-info { flex: 1; min-width: 0; }
+.day-type { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 2px; }
+.day-name { font-weight: 500; font-size: 15px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.day-meta { font-size: 12px; color: var(--ink-light); margin-top: 1px; }
+.day-arrow { color: var(--ink-faint); flex-shrink: 0; }
+.day-arrow svg { width: 18px; height: 18px; }
+.session-content { padding: 20px 24px 0; }
+.phase-banner { background: var(--accent-light); border-radius: var(--r-sm); padding: 12px 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+.phase-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.phase-text { font-size: 13px; color: var(--accent); font-weight: 500; }
+.block-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin: 24px 0 12px; }
+.exercise-card { background: white; border-radius: var(--r); box-shadow: var(--safe); margin-bottom: 10px; overflow: hidden; }
+.exercise-header { padding: 16px 18px 12px; cursor: pointer; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.exercise-name { font-weight: 500; font-size: 15px; color: var(--ink); flex: 1; }
+.exercise-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.chip { font-size: 11px; font-weight: 500; background: var(--paper-warm); color: var(--ink-light); padding: 3px 8px; border-radius: 20px; }
+.chip.highlight { background: var(--accent-light); color: var(--accent); }
+.exercise-note { font-size: 13px; color: var(--ink-light); line-height: 1.55; padding: 10px 18px 14px; border-top: 1px solid var(--paper-warm); display: none; }
+.exercise-note.open { display: block; }
+.log-section { padding: 0 18px 16px; border-top: 1px solid var(--paper-warm); display: none; }
+.log-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
+.log-field { display: flex; flex-direction: column; gap: 4px; }
+.log-field label { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); }
+.log-field input { background: var(--paper-warm); border: 1.5px solid transparent; border-radius: 8px; padding: 9px 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--ink); width: 100%; -webkit-appearance: none; }
+.log-field input:focus { outline: none; border-color: var(--accent); background: white; }
+.log-field input::placeholder { color: var(--ink-faint); font-weight: 400; }
+.log-save-btn { width: 100%; margin-top: 10px; padding: 11px; background: var(--accent); color: white; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; }
+.log-save-btn:active { opacity: 0.75; }
+.saved-badge { text-align: center; font-size: 12px; color: var(--accent); font-weight: 500; padding: 6px 0 0; display: none; }
+.saved-badge.show { display: block; }
+.drill-card { background: white; border-radius: var(--r); box-shadow: var(--safe); margin-bottom: 10px; padding: 16px 18px; }
+.drill-card.accent-left { border-left: 3px solid var(--accent); }
+.drill-name { font-weight: 500; font-size: 15px; color: var(--ink); margin-bottom: 4px; }
+.drill-duration { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; background: var(--accent-light); color: var(--accent); padding: 3px 8px; border-radius: 20px; margin-bottom: 8px; }
+.drill-purpose { font-size: 13px; color: var(--ink-light); line-height: 1.55; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(250,250,248,0.93); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(0,0,0,0.06); display: flex; padding: 8px 0 max(12px, env(safe-area-inset-bottom)); z-index: 100; }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 4px 0; color: var(--ink-faint); }
+.nav-btn.active { color: var(--accent); }
+.nav-btn svg { width: 22px; height: 22px; }
+.nav-btn span { font-size: 10px; font-weight: 500; letter-spacing: 0.04em; }
+.progress-content { padding: 20px 24px 0; }
+.log-entry { background: white; border-radius: var(--r-sm); box-shadow: var(--safe); padding: 14px 16px; margin-bottom: 8px; }
+.log-entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.log-entry-name { font-weight: 500; font-size: 14px; }
+.log-entry-date { font-size: 11px; color: var(--ink-faint); }
+.log-entry-values { display: flex; gap: 16px; }
+.log-entry-val { font-size: 13px; color: var(--ink-light); }
+.log-entry-val strong { color: var(--ink); font-weight: 500; }
+.empty-state { text-align: center; padding: 48px 24px; color: var(--ink-light); }
+.empty-state .icon { font-size: 36px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; line-height: 1.6; }
+.clear-btn { width: 100%; margin: 16px 0; padding: 12px; background: none; border: 1.5px solid var(--ink-faint); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--ink-light); cursor: pointer; }
+.pullup-card { background: white; border-radius: var(--r); box-shadow: var(--safe); padding: 20px; margin-bottom: 16px; }
+.pullup-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--paper-warm); }
+.pullup-row:last-child { border-bottom: none; }
+.pullup-label { font-size: 14px; font-weight: 500; }
+.pullup-date { font-size: 11px; color: var(--ink-faint); }
+.pullup-val { font-family: 'DM Serif Display', serif; font-size: 22px; }
+.progress-bar-wrap { background: var(--paper-warm); border-radius: 20px; height: 8px; overflow: hidden; margin: 8px 0 16px; }
+.progress-bar-fill { background: var(--accent); height: 100%; border-radius: 20px; transition: width 0.5s ease; }
+.pu-log-card { background: white; border-radius: var(--r); box-shadow: var(--safe); padding: 16px 18px; margin-bottom: 10px; }
+.pu-log-title { font-weight: 500; font-size: 14px; margin-bottom: 10px; }
 </style>
 </head>
 <body>
 
-<!-- ===================== HOME ===================== -->
+<!-- HOME -->
 <div class="screen active" id="screen-home">
   <div class="home-hero">
     <div class="home-greeting">Phase 1 · Week 1</div>
     <h1 class="home-title">Good<br><em>morning.</em></h1>
     <p class="home-sub">Your programme. Tap a session to begin.</p>
   </div>
-
   <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-num" id="stat-sessions">0</div>
-      <div class="stat-label">Sessions</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="stat-pullups">4–6</div>
-      <div class="stat-label">Pull-ups</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="stat-streak">0</div>
-      <div class="stat-label">Streak</div>
-    </div>
+    <div class="stat-card"><div class="stat-num" id="stat-sessions">0</div><div class="stat-label">Logged</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-pullups">4–6</div><div class="stat-label">Pull-ups</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-days">8</div><div class="stat-label">Wks to go</div></div>
   </div>
-
   <div class="week-section">
     <div class="section-label">This week</div>
-
     <div class="day-card" onclick="openSession('upper-a')">
       <div class="day-card-inner">
-        <div class="day-badge gym">
-          <div class="day-badge-day">Mon</div>
-          <div class="day-badge-abbr">A</div>
-        </div>
-        <div class="day-info">
-          <div class="day-type">Gym</div>
-          <div class="day-name">Upper A — Push & Shoulders</div>
-          <div class="day-meta">60–75 min · Yoga drills included</div>
-        </div>
+        <div class="day-badge gym"><div class="day-badge-day">Mon</div><div class="day-badge-abbr">A</div></div>
+        <div class="day-info"><div class="day-type">Gym</div><div class="day-name">Upper A — Push & Shoulders</div><div class="day-meta">60–75 min · Yoga drills included</div></div>
         <div class="day-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18l6-6-6-6"/></svg></div>
       </div>
     </div>
-
     <div class="day-card" onclick="openSession('yoga-a')">
       <div class="day-card-inner">
-        <div class="day-badge yoga">
-          <div class="day-badge-day">Tue</div>
-          <div class="day-badge-abbr">🌿</div>
-        </div>
-        <div class="day-info">
-          <div class="day-type">Home · Mat</div>
-          <div class="day-name">Yoga + Drills A</div>
-          <div class="day-meta">45 min · Hip flexors & hamstrings</div>
-        </div>
+        <div class="day-badge yoga"><div class="day-badge-day">Tue</div><div class="day-badge-abbr">🌿</div></div>
+        <div class="day-info"><div class="day-type">Home · Mat</div><div class="day-name">Yoga + Drills A</div><div class="day-meta">45 min · Hip flexors & hamstrings</div></div>
         <div class="day-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18l6-6-6-6"/></svg></div>
       </div>
     </div>
-
     <div class="day-card" onclick="openSession('lower-a')">
       <div class="day-card-inner">
-        <div class="day-badge gym">
-          <div class="day-badge-day">Wed</div>
-          <div class="day-badge-abbr">B</div>
-        </div>
-        <div class="day-info">
-          <div class="day-type">Gym</div>
-          <div class="day-name">Lower A — Squat & Compression</div>
-          <div class="day-meta">60–75 min · L-sit & hollow body</div>
-        </div>
+        <div class="day-badge gym"><div class="day-badge-day">Wed</div><div class="day-badge-abbr">B</div></div>
+        <div class="day-info"><div class="day-type">Gym</div><div class="day-name">Lower A — Squat & Compression</div><div class="day-meta">60–75 min · L-sit & hollow body</div></div>
         <div class="day-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18l6-6-6-6"/></svg></div>
       </div>
     </div>
-
     <div class="day-card" onclick="openSession('yoga-b')">
       <div class="day-card-inner">
-        <div class="day-badge yoga">
-          <div class="day-badge-day">Thu</div>
-          <div class="day-badge-abbr">🌿</div>
-        </div>
-        <div class="day-info">
-          <div class="day-type">Home · Mat</div>
-          <div class="day-name">Yoga + Drills B</div>
-          <div class="day-meta">30–45 min · Inversion prep</div>
-        </div>
+        <div class="day-badge yoga"><div class="day-badge-day">Thu</div><div class="day-badge-abbr">🌿</div></div>
+        <div class="day-info"><div class="day-type">Home · Mat</div><div class="day-name">Yoga + Drills B</div><div class="day-meta">30–45 min · Inversion prep</div></div>
         <div class="day-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18l6-6-6-6"/></svg></div>
       </div>
     </div>
-
     <div class="day-card" onclick="openSession('upper-b')">
       <div class="day-card-inner">
-        <div class="day-badge gym">
-          <div class="day-badge-day">Fri</div>
-          <div class="day-badge-abbr">C</div>
-        </div>
-        <div class="day-info">
-          <div class="day-type">Gym</div>
-          <div class="day-name">Upper B — Pull & Handstand</div>
-          <div class="day-meta">60–75 min · Pull-up progression</div>
-        </div>
+        <div class="day-badge gym"><div class="day-badge-day">Fri</div><div class="day-badge-abbr">C</div></div>
+        <div class="day-info"><div class="day-type">Gym</div><div class="day-name">Upper B — Pull & Handstand</div><div class="day-meta">60–75 min · Pull-up progression</div></div>
         <div class="day-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18l6-6-6-6"/></svg></div>
       </div>
     </div>
-
     <div class="day-card" onclick="openSession('lower-b')">
       <div class="day-card-inner">
-        <div class="day-badge gym" style="background:#c9a96e">
-          <div class="day-badge-day">Sat</div>
-          <div class="day-badge-abbr">D</div>
-        </div>
-        <div class="day-info">
-          <div class="day-type">Gym · Optional</div>
-          <div class="day-name">Lower B — Hip Dominant & Core</div>
-          <div class="day-meta">50–60 min</div>
-        </div>
+        <div class="day-badge gym" style="background:#c9a96e"><div class="day-badge-day">Sat</div><div class="day-badge-abbr">D</div></div>
+        <div class="day-info"><div class="day-type">Gym · Optional</div><div class="day-name">Lower B — Hip Dominant & Core</div><div class="day-meta">50–60 min</div></div>
         <div class="day-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18l6-6-6-6"/></svg></div>
       </div>
     </div>
-
     <div class="day-card rest-card">
       <div class="day-card-inner">
-        <div class="day-badge rest">
-          <div class="day-badge-day">Sun</div>
-          <div class="day-badge-abbr">—</div>
-        </div>
-        <div class="day-info">
-          <div class="day-type">Rest</div>
-          <div class="day-name">Full rest day</div>
-          <div class="day-meta">Sleep. Eat. Recover.</div>
-        </div>
+        <div class="day-badge rest"><div class="day-badge-day">Sun</div><div class="day-badge-abbr">—</div></div>
+        <div class="day-info"><div class="day-type">Rest</div><div class="day-name">Full rest day</div><div class="day-meta">Sleep. Eat. Recover.</div></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ===================== SESSION: UPPER A ===================== -->
+<!-- UPPER A -->
 <div class="screen" id="screen-upper-a">
   <div class="app-header">
-    <button class="back-btn" onclick="goHome()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
-    </button>
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back</button>
     <div class="header-eyebrow">Monday · Gym</div>
     <h2 class="header-title">Upper A</h2>
     <div class="header-subtitle">Push · Shoulder stability · Wrist prep</div>
   </div>
   <div class="session-content">
-    <div class="phase-banner">
-      <div class="phase-dot"></div>
-      <div class="phase-text">Phase 1, Weeks 1–2: 60–65% of max. Focus on form. Don't go to failure.</div>
-    </div>
-
+    <div class="phase-banner"><div class="phase-dot"></div><div class="phase-text">Phase 1, Wks 1–2: 60–65% of max. Form over weight. Don't go to failure.</div></div>
     <div class="block-label">Warm-Up · 10 min</div>
-    <div class="drill-card"><div class="drill-name">Cat-Cow with breath</div><div class="drill-duration">10 reps</div><div class="drill-purpose">Spine awakening — link to your morning yoga flow. Inhale arch, exhale round.</div></div>
-    <div class="drill-card"><div class="drill-name">Thoracic rotation on all fours</div><div class="drill-duration">8 each side</div><div class="drill-purpose">Opens upper back for overhead pressing. Hand behind head, rotate elbow to ceiling.</div></div>
-    <div class="drill-card"><div class="drill-name">Wall slides</div><div class="drill-duration">10 slow reps</div><div class="drill-purpose">Activates lower traps and serratus — essential for handstand. Stand against wall, arms in goalpost, slide up.</div></div>
-    <div class="drill-card"><div class="drill-name">Wrist circles + wrist CARs</div><div class="drill-duration">60 sec</div><div class="drill-purpose">Always do this before any loading. Slow controlled circles in both directions.</div></div>
-    <div class="drill-card"><div class="drill-name">Shoulder CARs</div><div class="drill-duration">5 each direction</div><div class="drill-purpose">Controlled Articular Rotations — full shoulder joint prep. Slow, maximum range circles.</div></div>
-
+    <div class="drill-card"><div class="drill-name">Cat-Cow with breath</div><div class="drill-duration">10 reps</div><div class="drill-purpose">Spine awakening. Inhale to arch, exhale to round. Link to your morning yoga flow.</div></div>
+    <div class="drill-card"><div class="drill-name">Thoracic rotation on all fours</div><div class="drill-duration">8 each side</div><div class="drill-purpose">Opens upper back for overhead pressing. Hand behind head, rotate elbow toward ceiling.</div></div>
+    <div class="drill-card"><div class="drill-name">Wall slides</div><div class="drill-duration">10 slow reps</div><div class="drill-purpose">Stand against wall, arms in goalpost shape, slide up overhead. Activates lower traps and serratus — essential for handstand.</div></div>
+    <div class="drill-card"><div class="drill-name">Wrist circles + wrist CARs</div><div class="drill-duration">60 sec</div><div class="drill-purpose">Always do this before any loading. Slow controlled circles both directions, then controlled articular rotations.</div></div>
+    <div class="drill-card"><div class="drill-name">Shoulder CARs</div><div class="drill-duration">5 each direction</div><div class="drill-purpose">Full shoulder joint prep. Move as slowly as possible through maximum range in both directions.</div></div>
     <div class="block-label">Main Work</div>
-    <div id="exercises-upper-a"></div>
-
+    <div id="ex-upper-a"></div>
     <div class="block-label">Yoga Finish · 10 min</div>
-    <div class="drill-card"><div class="drill-name">Hollow body hold</div><div class="drill-duration">3 × 20–30 sec</div><div class="drill-purpose">Core compression — the body position that makes handstands work. Ribs down, lower back pressed to floor, arms overhead or by sides.</div></div>
-    <div class="drill-card"><div class="drill-name">Pike compression hold</div><div class="drill-duration">3 × 20 sec</div><div class="drill-purpose">Seated, legs straight, fold forward actively. Pull yourself down with hip flexors — not just gravity. This is active hamstring work.</div></div>
-    <div class="drill-card"><div class="drill-name">Prone cobra / Sphinx</div><div class="drill-duration">2 × 30 sec hold</div><div class="drill-purpose">Shoulder extension + hip flexor counter-stretch post-press. Lie face down, press up onto forearms or hands, keep pelvis down.</div></div>
+    <div class="drill-card"><div class="drill-name">Hollow body hold</div><div class="drill-duration">3 × 20–30 sec</div><div class="drill-purpose">Ribs down, lower back pressed to floor, arms overhead, legs just off ground. This IS the handstand body position. The most important drill in this programme.</div></div>
+    <div class="drill-card"><div class="drill-name">Pike compression hold</div><div class="drill-duration">3 × 20 sec</div><div class="drill-purpose">Seated, legs straight, actively pull yourself into a forward fold using your hip flexors — not just gravity. This is active hamstring work, not passive stretching.</div></div>
+    <div class="drill-card"><div class="drill-name">Prone cobra / Sphinx</div><div class="drill-duration">2 × 30 sec</div><div class="drill-purpose">Lie face down, press up onto forearms or hands. Shoulder extension and hip flexor counter-stretch after all that pressing.</div></div>
   </div>
 </div>
 
-<!-- ===================== SESSION: UPPER B ===================== -->
+<!-- UPPER B -->
 <div class="screen" id="screen-upper-b">
   <div class="app-header">
-    <button class="back-btn" onclick="goHome()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
-    </button>
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back</button>
     <div class="header-eyebrow">Friday · Gym</div>
     <h2 class="header-title">Upper B</h2>
     <div class="header-subtitle">Pull · Scapular control · Handstand drills</div>
   </div>
   <div class="session-content">
-    <div class="phase-banner">
-      <div class="phase-dot"></div>
-      <div class="phase-text">Phase 1, Weeks 1–2: Reconnect. Don't grind to failure.</div>
-    </div>
-
+    <div class="phase-banner"><div class="phase-dot"></div><div class="phase-text">Phase 1: Reconnect. Quality over quantity. Don't grind to failure.</div></div>
     <div class="block-label">Warm-Up · 10 min</div>
-    <div class="drill-card"><div class="drill-name">Dead hang (passive)</div><div class="drill-duration">3 × 20–30 sec</div><div class="drill-purpose">Decompress spine + shoulder traction. Let everything hang. Breathe.</div></div>
-    <div class="drill-card"><div class="drill-name">Scapular pull-ups</div><div class="drill-duration">3 × 8</div><div class="drill-purpose">No elbow bend — just depress and retract scapulae. Isolates the exact movement needed for handstands.</div></div>
-    <div class="drill-card"><div class="drill-name">Band pull-aparts</div><div class="drill-duration">15 reps</div><div class="drill-purpose">Activates rear delts and mid-traps. Hold band at shoulder height, pull apart to T-shape.</div></div>
-    <div class="drill-card"><div class="drill-name">Downward dog walk-outs + pedal</div><div class="drill-duration">5 reps</div><div class="drill-purpose">Your yoga warm-up in gym context. Walk hands out from standing, pedal heels.</div></div>
-
+    <div class="drill-card"><div class="drill-name">Dead hang (passive)</div><div class="drill-duration">3 × 20–30 sec</div><div class="drill-purpose">Hang from the bar and let everything go. Decompresses the spine and tractions the shoulder. Do this every single session.</div></div>
+    <div class="drill-card"><div class="drill-name">Scapular pull-ups</div><div class="drill-duration">3 × 8</div><div class="drill-purpose">No elbow bend at all — just depress and retract your shoulder blades. Isolates the exact movement that holds you up in a handstand.</div></div>
+    <div class="drill-card"><div class="drill-name">Band pull-aparts</div><div class="drill-duration">15 reps</div><div class="drill-purpose">Hold band at shoulder height, pull apart to a T shape. Activates rear delts and mid-traps.</div></div>
+    <div class="drill-card"><div class="drill-name">Downward dog walk-outs + pedal</div><div class="drill-duration">5 reps</div><div class="drill-purpose">Walk hands out from standing into down dog, pedal the heels. Your yoga warm-up in gym context.</div></div>
     <div class="block-label">Pull-Up Progression 🎯</div>
-    <div class="drill-card" style="border-left: 3px solid var(--accent);">
+    <div class="drill-card accent-left">
       <div class="drill-name">Grease the Groove Protocol</div>
-      <div class="drill-duration">5 sets · Stop 2 reps short</div>
-      <div class="drill-purpose">If your max is 6, do 4 per set. Rest 90 sec between sets. Every week all 5 sets feel easy → add 1 rep across all sets. Week 1: ~4 reps. Goal: 5 × 8 = 10 rep max within reach.</div>
+      <div class="drill-duration">5 sets · Stop 2 reps short · Rest 90s</div>
+      <div class="drill-purpose">If your max is 6, do 4 per set. When all 5 sets feel easy, add 1 rep across all sets next week. Week 1 target: ~4 reps/set. This gives you 20 quality reps vs grinding out 2 ugly sets.</div>
     </div>
     <div class="drill-card">
       <div class="drill-name">Slow Eccentric Negative Pull-Up</div>
-      <div class="drill-duration">3 × 4–5 reps · 5 sec down</div>
-      <div class="drill-purpose">Jump or use box to get chin over bar. Lower as slowly as possible — aim for 5 full seconds. This builds the strength exactly where you fail on rep 7–8.</div>
+      <div class="drill-duration">3 × 4–5 reps · 5 sec descent</div>
+      <div class="drill-purpose">Jump or step to get chin over bar, then lower as slowly as possible — aim for a full 5 seconds. Builds the strength exactly where you fail on rep 7 and 8.</div>
     </div>
-
-    <div id="pullup-log" style="background:white;border-radius:var(--r);box-shadow:var(--safe);padding:16px 18px;margin-bottom:10px;">
-      <div style="font-weight:500;font-size:14px;color:var(--ink);margin-bottom:10px;">Log this week's pull-ups</div>
+    <div class="pu-log-card">
+      <div class="pu-log-title">Log this week's pull-ups</div>
       <div class="log-row">
         <div class="log-field"><label>Max reps</label><input type="number" id="pu-max" placeholder="e.g. 6" inputmode="numeric"></div>
         <div class="log-field"><label>Sets done</label><input type="number" id="pu-sets" placeholder="5" inputmode="numeric"></div>
         <div class="log-field"><label>Week #</label><input type="number" id="pu-week" placeholder="1" inputmode="numeric"></div>
       </div>
-      <button class="log-save-btn" onclick="savePullupLog()">Save pull-up progress</button>
-      <div class="log-saved-badge" id="pu-saved">✓ Saved</div>
+      <button class="log-save-btn" onclick="savePullups()">Save pull-up progress</button>
+      <div class="saved-badge" id="pu-saved">✓ Saved</div>
     </div>
-
     <div class="block-label">Main Work</div>
-    <div id="exercises-upper-b"></div>
-
+    <div id="ex-upper-b"></div>
     <div class="block-label">Handstand Drill Block · 10–15 min</div>
-    <div class="drill-card"><div class="drill-name">Wall handstand hold (chest to wall)</div><div class="drill-duration">3 × 20–30 sec</div><div class="drill-purpose">Chest facing wall is safer alignment than back to wall — forces proper hollow body. Build time here before going freestanding.</div></div>
-    <div class="drill-card"><div class="drill-name">Handstand kick-up practice</div><div class="drill-duration">5–8 attempts</div><div class="drill-purpose">Back to wall. Focus on one leg at a time, strong hollow body. Don't banana — keep ribs down. Kick-up is a skill: volume of attempts matters more than duration.</div></div>
-    <div class="drill-card"><div class="drill-name">Pike walk-ins (feet up wall)</div><div class="drill-duration">5 reps</div><div class="drill-purpose">From downward dog, walk feet up wall until hips are over shoulders. Builds compression strength and gets you comfortable being inverted.</div></div>
-    <div class="drill-card"><div class="drill-name">Tuck compression holds</div><div class="drill-duration">3 × 15 sec</div><div class="drill-purpose">Seated, pull knees to chest with a straight back. This is your straddle prep — the hip flexor compression that eventually lets you press to handstand.</div></div>
+    <div class="drill-card"><div class="drill-name">Wall handstand hold (chest to wall)</div><div class="drill-duration">3 × 20–30 sec</div><div class="drill-purpose">Chest facing wall forces proper hollow body alignment. Safer and more effective than back to wall. Build time here before going freestanding.</div></div>
+    <div class="drill-card"><div class="drill-name">Handstand kick-up practice</div><div class="drill-duration">5–8 attempts</div><div class="drill-purpose">Back to wall. One leg at a time, strong hollow body, ribs down. Each attempt is a rep — volume of practice matters more than duration of hold.</div></div>
+    <div class="drill-card"><div class="drill-name">Pike walk-ins (feet up wall)</div><div class="drill-duration">5 reps</div><div class="drill-purpose">From downward dog, walk feet up the wall until hips stack over shoulders. Builds compression strength and comfort being inverted.</div></div>
+    <div class="drill-card"><div class="drill-name">Tuck compression holds</div><div class="drill-duration">3 × 15 sec</div><div class="drill-purpose">Seated, pull knees to chest with a straight back. Direct straddle handstand prep — the hip flexor compression that eventually lets you press up.</div></div>
   </div>
 </div>
 
-<!-- ===================== SESSION: LOWER A ===================== -->
+<!-- LOWER A -->
 <div class="screen" id="screen-lower-a">
   <div class="app-header">
-    <button class="back-btn" onclick="goHome()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
-    </button>
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back</button>
     <div class="header-eyebrow">Wednesday · Gym</div>
     <h2 class="header-title">Lower A</h2>
     <div class="header-subtitle">Squat · Hip hinge · Compression strength</div>
   </div>
   <div class="session-content">
-    <div class="phase-banner">
-      <div class="phase-dot"></div>
-      <div class="phase-text">Phase 1: Full range of motion. Let the hip flexor stretch happen in every rep.</div>
-    </div>
-
+    <div class="phase-banner"><div class="phase-dot"></div><div class="phase-text">Phase 1: Full range of motion. Let the hip flexor stretch happen in every rep.</div></div>
     <div class="block-label">Warm-Up · 10 min</div>
-    <div class="drill-card"><div class="drill-name">Hip 90-90 with active holds</div><div class="drill-duration">5 each side</div><div class="drill-purpose">The single best hip flexor and external rotator opener. Sit with both legs at 90°, rotate between sides. Hold each position actively — don't just collapse into it.</div></div>
-    <div class="drill-card"><div class="drill-name">Lizard lunge with rotation</div><div class="drill-duration">5 each side</div><div class="drill-purpose">Deep hip flexor and groin opening. Step foot outside hand, lower back knee. Add thoracic rotation — reach top hand to ceiling. This is your low lunge, loaded.</div></div>
-    <div class="drill-card"><div class="drill-name">Leg swings</div><div class="drill-duration">10 each direction</div><div class="drill-purpose">Forward-back then lateral. Hold wall for balance. Hip joint warm-up — don't force range, let momentum do it.</div></div>
-    <div class="drill-card"><div class="drill-name">Glute bridge activation</div><div class="drill-duration">15 reps</div><div class="drill-purpose">Wakes up glutes before squatting. Your hip flexors tend to dominate — this corrects that before you load.</div></div>
-
+    <div class="drill-card"><div class="drill-name">Hip 90-90 with active holds</div><div class="drill-duration">5 each side</div><div class="drill-purpose">Sit with both legs at 90°, rotate between sides. Hold each position actively — squeeze the hip down rather than just collapsing into it. Best hip opener in this programme.</div></div>
+    <div class="drill-card"><div class="drill-name">Lizard lunge with rotation</div><div class="drill-duration">5 each side</div><div class="drill-purpose">Step foot outside hand, lower back knee. Add thoracic rotation — reach top hand to ceiling. Deep hip flexor and groin opening. This is your low lunge, loaded.</div></div>
+    <div class="drill-card"><div class="drill-name">Leg swings</div><div class="drill-duration">10 each direction</div><div class="drill-purpose">Hold wall for balance. Forward-back then lateral. Let momentum do the work — don't force range.</div></div>
+    <div class="drill-card"><div class="drill-name">Glute bridge activation</div><div class="drill-duration">15 reps</div><div class="drill-purpose">Wakes up glutes before squatting. Your hip flexors tend to dominate — this corrects that pattern before you load.</div></div>
     <div class="block-label">Main Work</div>
-    <div id="exercises-lower-a"></div>
-
+    <div id="ex-lower-a"></div>
     <div class="block-label">Compression Block · 10 min</div>
-    <div class="drill-card"><div class="drill-name">L-sit hold</div><div class="drill-duration">3 × 10–20 sec</div><div class="drill-purpose">THE compression exercise. Use parallel bars or floor blocks. Legs straight, hips at 90°, press down through hands. Direct training for Crow, Firefly, handstand.</div></div>
-    <div class="drill-card"><div class="drill-name">Lying leg raise</div><div class="drill-duration">3 × 12</div><div class="drill-purpose">Slow and controlled. Lower back stays pressed to floor the entire time. Lower abs + hip flexor — the same muscles that hold your legs up in a handstand.</div></div>
-    <div class="drill-card"><div class="drill-name">Seated forward fold — active pulling</div><div class="drill-duration">3 × 20 sec</div><div class="drill-purpose">Hands on feet or shins, actively pull yourself down rather than just folding. This is active hamstring flexibility — more effective than passive stretching long-term.</div></div>
+    <div class="drill-card"><div class="drill-name">L-sit hold</div><div class="drill-duration">3 × 10–20 sec</div><div class="drill-purpose">Use parallel bars or floor blocks. Legs straight, hips at 90°, press down through hands. THE compression exercise — direct training for Crow, Firefly, handstand.</div></div>
+    <div class="drill-card"><div class="drill-name">Lying leg raise (slow)</div><div class="drill-duration">3 × 12</div><div class="drill-purpose">Lower back stays pressed to floor the entire time. Lower abs and hip flexors — the muscles that hold your legs up in a handstand.</div></div>
+    <div class="drill-card"><div class="drill-name">Seated forward fold — active pulling</div><div class="drill-duration">3 × 20 sec</div><div class="drill-purpose">Hands on feet or shins, actively pull yourself down using your hip flexors rather than just folding. Active flexibility change is faster than passive.</div></div>
   </div>
 </div>
 
-<!-- ===================== SESSION: LOWER B ===================== -->
+<!-- LOWER B -->
 <div class="screen" id="screen-lower-b">
   <div class="app-header">
-    <button class="back-btn" onclick="goHome()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
-    </button>
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back</button>
     <div class="header-eyebrow">Saturday · Gym · Optional</div>
     <h2 class="header-title">Lower B</h2>
     <div class="header-subtitle">Hip dominant · Core · Balance</div>
   </div>
   <div class="session-content">
-    <div class="phase-banner">
-      <div class="phase-dot"></div>
-      <div class="phase-text">Optional session. If you're tired, rest is the better choice.</div>
-    </div>
+    <div class="phase-banner"><div class="phase-dot"></div><div class="phase-text">Optional. If you're tired, rest is the better choice today.</div></div>
     <div class="block-label">Main Work</div>
-    <div id="exercises-lower-b"></div>
+    <div id="ex-lower-b"></div>
     <div class="block-label">Core Finish · 10 min</div>
-    <div id="exercises-lower-b-core"></div>
+    <div id="ex-lower-b-core"></div>
   </div>
 </div>
 
-<!-- ===================== YOGA A ===================== -->
+<!-- YOGA A -->
 <div class="screen" id="screen-yoga-a">
   <div class="app-header">
-    <button class="back-btn" onclick="goHome()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
-    </button>
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back</button>
     <div class="header-eyebrow">Tuesday · Home · Mat</div>
     <h2 class="header-title">Yoga + Drills A</h2>
     <div class="header-subtitle">Hip flexors · Hamstrings · 45 min</div>
   </div>
   <div class="session-content">
-    <div class="phase-banner">
-      <div class="phase-dot"></div>
-      <div class="phase-text">No class needed — this IS the session. Work slowly. Breathe into resistance.</div>
-    </div>
+    <div class="phase-banner"><div class="phase-dot"></div><div class="phase-text">No class needed — this IS the session. Work slowly. Breathe into resistance.</div></div>
     <div class="block-label">Part 1 — Hip Flexor Release & Strengthening · 15 min</div>
-    <div class="drill-card"><div class="drill-name">PNF Low Lunge (contract-relax)</div><div class="drill-duration">5 reps × 10 sec each side</div><div class="drill-purpose">Tighten hip flexor for 10 sec (push front foot into floor without moving it), then actively relax deeper. PNF is the most effective method for real hip flexor change.</div></div>
-    <div class="drill-card"><div class="drill-name">Psoas March — standing</div><div class="drill-duration">3 × 12 each side</div><div class="drill-purpose">Standing, drive one knee up against light resistance or your own hand. Strengthens the hip flexor actively. You need length AND strength — passive stretching alone won't fix this.</div></div>
-    <div class="drill-card"><div class="drill-name">Crescent lunge — lift back knee, hold 5 sec</div><div class="drill-duration">5 reps each side</div><div class="drill-purpose">Back knee on mat in low lunge, then lift it off and hold. Loads the hip flexor stretch while demanding active control — harder than it sounds.</div></div>
-    <div class="drill-card"><div class="drill-name">Reclined hero pose (Supta Virasana)</div><div class="drill-duration">2 min hold</div><div class="drill-purpose">Deep passive hip flexor and quad release. Use a bolster or folded blanket under your back if knees complain. Don't force this one — it will come.</div></div>
-    <div class="drill-card"><div class="drill-name">Couch stretch against wall</div><div class="drill-duration">90 sec each side</div><div class="drill-purpose">Back shin up the wall, front foot forward in a lunge. One of the best psoas and rectus femoris openers. Hold passively, then add a gentle posterior pelvic tilt.</div></div>
-
+    <div class="drill-card"><div class="drill-name">PNF Low Lunge (contract-relax)</div><div class="drill-duration">5 reps × 10 sec each side</div><div class="drill-purpose">In a low lunge, press your front foot into the floor for 10 seconds (isometric — don't actually move), then actively relax deeper. PNF is the most effective method for real hip flexor change — more than passive stretching.</div></div>
+    <div class="drill-card"><div class="drill-name">Psoas March — standing</div><div class="drill-duration">3 × 12 each side</div><div class="drill-purpose">Standing, drive one knee up against light resistance (your own hand or a band). You need length AND strength in the hip flexor — passive stretching alone won't fix tightness long-term.</div></div>
+    <div class="drill-card"><div class="drill-name">Crescent lunge — lift back knee, hold 5 sec</div><div class="drill-duration">5 reps each side</div><div class="drill-purpose">Start in low lunge with back knee down, then lift the back knee off the floor and hold for 5 seconds. Loads the hip flexor stretch while demanding active control.</div></div>
+    <div class="drill-card"><div class="drill-name">Reclined hero pose (Supta Virasana)</div><div class="drill-duration">2 min hold</div><div class="drill-purpose">Deep passive hip flexor and quad release. Use a bolster or folded blanket under your back if knees complain. Don't force this — it will come over weeks.</div></div>
+    <div class="drill-card"><div class="drill-name">Couch stretch against wall</div><div class="drill-duration">90 sec each side</div><div class="drill-purpose">Back shin up the wall, front foot forward in a lunge shape. One of the best psoas and rectus femoris openers. Hold passively, then add a gentle posterior pelvic tilt.</div></div>
     <div class="block-label">Part 2 — Hamstring Lengthening · 15 min</div>
-    <div class="drill-card"><div class="drill-name">Active straight-leg raise</div><div class="drill-duration">10 each side</div><div class="drill-purpose">Lying down, actively lift one straight leg as high as possible without the other leg shifting. Tests and builds active hamstring flexibility — more useful than static stretching.</div></div>
-    <div class="drill-card"><div class="drill-name">Standing forward fold — slowly straighten knees</div><div class="drill-duration">5 reps × 5 breaths</div><div class="drill-purpose">Start bent, hang heavy, then slowly straighten legs a little more each exhale. Teaches the nervous system to release the hamstring gradually rather than bracing against the stretch.</div></div>
-    <div class="drill-card"><div class="drill-name">Strap-assisted passive hold</div><div class="drill-duration">2 × 90 sec each side</div><div class="drill-purpose">Lying on back, strap around one foot, leg toward ceiling. Completely relax, breathe. Long passive holds are where genuine length changes happen — don't rush this.</div></div>
-    <div class="drill-card"><div class="drill-name">Seated straddle — walk hands out</div><div class="drill-duration">2 min hold</div><div class="drill-purpose">Legs wide, slowly walk hands forward, keep spine long. Adductor and hamstring combined. Breathe and let gravity work. This unlocks seated compression poses over time.</div></div>
-    <div class="drill-card"><div class="drill-name">Pyramid pose (Parsvottanasana) with blocks</div><div class="drill-duration">90 sec each side</div><div class="drill-purpose">Hands on blocks, front leg straight, fold over it. Very specific hamstring stretch — effective for anyone who carries tension in hips and lower back.</div></div>
+    <div class="drill-card"><div class="drill-name">Active straight-leg raise</div><div class="drill-duration">10 each side</div><div class="drill-purpose">Lying down, actively lift one straight leg as high as you can without the other leg or your lower back shifting. Tests and builds active hamstring flexibility — more useful than static holds.</div></div>
+    <div class="drill-card"><div class="drill-name">Standing forward fold — slowly straighten knees</div><div class="drill-duration">5 reps × 5 breaths</div><div class="drill-purpose">Start with bent knees, hang heavy, then gradually straighten a little more each exhale. Teaches the nervous system to release the hamstring rather than bracing against the stretch.</div></div>
+    <div class="drill-card"><div class="drill-name">Strap-assisted passive hold</div><div class="drill-duration">2 × 90 sec each side</div><div class="drill-purpose">Lying on back, strap around one foot, leg toward ceiling. Completely relax into it and breathe. Long passive holds are where genuine length changes actually happen.</div></div>
+    <div class="drill-card"><div class="drill-name">Seated straddle — walk hands out</div><div class="drill-duration">2 min hold</div><div class="drill-purpose">Legs wide, slowly walk hands forward keeping spine long. Adductor and hamstring combined. Let gravity work. Unlocks seated compression poses over time.</div></div>
+    <div class="drill-card"><div class="drill-name">Pyramid pose (Parsvottanasana) with blocks</div><div class="drill-duration">90 sec each side</div><div class="drill-purpose">Hands on blocks, front leg straight, fold forward over it. Very specific hamstring stretch — particularly effective if you carry tension in hips and lower back.</div></div>
   </div>
 </div>
 
-<!-- ===================== YOGA B ===================== -->
+<!-- YOGA B -->
 <div class="screen" id="screen-yoga-b">
   <div class="app-header">
-    <button class="back-btn" onclick="goHome()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
-    </button>
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back</button>
     <div class="header-eyebrow">Thursday · Home · Mat</div>
     <h2 class="header-title">Yoga + Drills B</h2>
     <div class="header-subtitle">Inversion prep · Compression · 30–45 min</div>
   </div>
   <div class="session-content">
-    <div class="phase-banner">
-      <div class="phase-dot"></div>
-      <div class="phase-text">This is skill training, not stretching. Keep it focused and intentional.</div>
-    </div>
+    <div class="phase-banner"><div class="phase-dot"></div><div class="phase-text">This is skill training, not stretching. Keep it focused and intentional.</div></div>
     <div class="block-label">Inversion & Compression Prep</div>
-    <div class="drill-card"><div class="drill-name">Crow pose (Bakasana)</div><div class="drill-duration">5–8 attempts × 10–20 sec</div><div class="drill-purpose">Core compression + wrist load + balance. Knees on upper arms (not in armpits), round the back, look forward. Your current arm balance to develop — more time here = faster progress.</div></div>
-    <div class="drill-card"><div class="drill-name">Tripod or supported headstand</div><div class="drill-duration">2–3 × 20–30 sec</div><div class="drill-purpose">Build hold time before attempting freestanding. Tripod: hands and crown of head form triangle. Supported: use wall. Focus on stacking hips over shoulders.</div></div>
-    <div class="drill-card"><div class="drill-name">Straddle compression — flat back forward lean</div><div class="drill-duration">3 × 20 sec</div><div class="drill-purpose">Legs wide, lean torso forward with a completely flat back. This builds the hip flexor strength needed for straddle handstand entry — not just flexibility.</div></div>
-    <div class="drill-card"><div class="drill-name">Hollow body rock</div><div class="drill-duration">3 × 20 sec</div><div class="drill-purpose">Ribs down, lower back pressed to floor, arms overhead, legs just off ground. Rock gently. Same body shape as a good handstand — your gym compression work and yoga come together here.</div></div>
-    <div class="drill-card"><div class="drill-name">Handstand kick-up practice against wall</div><div class="drill-duration">5–8 attempts</div><div class="drill-purpose">If space allows. Keep it playful — focus on alignment not duration. Each attempt is a rep. The handstand is a skill, and skills need volume of practice.</div></div>
-    <div class="drill-card"><div class="drill-name">Child's pose + shoulder stretch</div><div class="drill-duration">2 min</div><div class="drill-purpose">Cool down. Passive wrist and shoulder release. Thread one arm under for a shoulder stretch each side.</div></div>
+    <div class="drill-card"><div class="drill-name">Crow pose (Bakasana)</div><div class="drill-duration">5–8 attempts × 10–20 sec</div><div class="drill-purpose">Knees on upper arms (not in armpits), round the back, look forward. Core compression, wrist load, balance. Your current arm balance to build — more attempts = faster progress.</div></div>
+    <div class="drill-card"><div class="drill-name">Tripod or supported headstand</div><div class="drill-duration">2–3 × 20–30 sec</div><div class="drill-purpose">Tripod: hands and crown of head form a triangle. Use the wall if needed. Focus on stacking hips over shoulders. Build hold time steadily.</div></div>
+    <div class="drill-card"><div class="drill-name">Straddle compression — flat back lean</div><div class="drill-duration">3 × 20 sec</div><div class="drill-purpose">Legs wide, lean torso forward with a completely flat back. Builds hip flexor strength for straddle handstand entry — not just flexibility.</div></div>
+    <div class="drill-card"><div class="drill-name">Hollow body rock</div><div class="drill-duration">3 × 20 sec</div><div class="drill-purpose">Ribs down, lower back to floor, arms overhead, legs just off ground. Rock gently. Same body shape as a good handstand — this is where gym and yoga connect.</div></div>
+    <div class="drill-card"><div class="drill-name">Handstand kick-up practice against wall</div><div class="drill-duration">5–8 attempts</div><div class="drill-purpose">Keep it playful. Each attempt is a rep. Focus on alignment, not duration. The handstand is a skill and skills need volume.</div></div>
+    <div class="drill-card"><div class="drill-name">Child's pose + shoulder stretch</div><div class="drill-duration">2 min</div><div class="drill-purpose">Cool down. Thread one arm under for a shoulder stretch each side. Passive wrist and shoulder release.</div></div>
   </div>
 </div>
 
-<!-- ===================== PROGRESS SCREEN ===================== -->
+<!-- PROGRESS -->
 <div class="screen" id="screen-progress">
   <div class="app-header" style="position:relative;top:auto;">
     <div class="header-eyebrow">Your journey</div>
     <h2 class="header-title">Progress</h2>
-    <div class="header-subtitle">Logged weights & pull-up tracker</div>
+    <div class="header-subtitle">Pull-up tracker & weight log</div>
   </div>
   <div class="progress-content">
     <div class="block-label">Pull-Up Tracker — Goal: 10</div>
-    <div class="pullup-tracker" id="pullup-progress-display">
-      <div style="font-size:13px;color:var(--ink-light);text-align:center;padding:12px 0;">Log your pull-ups in Upper B to track progress here.</div>
-    </div>
-
+    <div id="pullup-display"></div>
     <div class="block-label">Weight Log</div>
-    <div id="weight-log-display">
-      <div class="progress-empty">
-        <div class="progress-empty-icon">📋</div>
-        <p>Tap any exercise in a session and log your weight. It'll show up here.</p>
-      </div>
-    </div>
-    <button class="clear-btn" onclick="clearAllLogs()">Clear all logs</button>
+    <div id="weight-display"></div>
+    <button class="clear-btn" onclick="clearAll()">Clear all logs</button>
   </div>
 </div>
 
-<!-- ===================== BOTTOM NAV ===================== -->
+<!-- NAV -->
 <div class="bottom-nav">
   <button class="nav-btn active" id="nav-home" onclick="switchTab('home')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -896,249 +372,201 @@
 </div>
 
 <script>
-// ===================== DATA =====================
 const EXERCISES = {
   'upper-a': [
-    { id: 'ua1', name: 'Dumbbell Overhead Press', sets: '4', reps: '8–10', rest: '90s', note: 'Keep ribs down — same alignment as Warrior 1 arms. Don\'t let the lower back arch as you press overhead.' },
-    { id: 'ua2', name: 'Incline Dumbbell Press', sets: '3', reps: '10–12', rest: '75s', note: 'Slight incline (30°) — chest and anterior delt focus. Control the descent.' },
-    { id: 'ua3', name: 'Cable Lateral Raise', sets: '3', reps: '12–15', rest: '60s', note: 'Slow eccentric — lower over 3 seconds. Builds the shoulder cap.' },
-    { id: 'ua4', name: 'Seated Cable Row (wide grip)', sets: '3', reps: '10–12', rest: '75s', note: 'Retract scapulae fully at the end of each rep. This is the foundation of your handstand hold.' },
-    { id: 'ua5', name: 'Dumbbell Chest Fly', sets: '3', reps: '12–15', rest: '60s', note: 'Get a deep stretch at the bottom — links to the chest opening in Wheel pose.' },
-    { id: 'ua6', name: 'Tricep Rope Pushdown', sets: '3', reps: '12–15', rest: '60s', note: 'Elbow extension strength — key for straight-arm holds in arm balances.' },
+    {id:'ua1',name:'Dumbbell Overhead Press',sets:'4',reps:'8–10',rest:'90s',note:'Keep ribs down — same alignment as Warrior 1 arms. Don\'t let the lower back arch as you press overhead.'},
+    {id:'ua2',name:'Incline Dumbbell Press',sets:'3',reps:'10–12',rest:'75s',note:'Slight incline (30°) — chest and anterior delt. Control the descent over 2–3 seconds.'},
+    {id:'ua3',name:'Cable Lateral Raise',sets:'3',reps:'12–15',rest:'60s',note:'Slow 3-second eccentric. Builds the shoulder cap. Don\'t swing.'},
+    {id:'ua4',name:'Seated Cable Row (wide grip)',sets:'3',reps:'10–12',rest:'75s',note:'Retract scapulae fully at the end of every rep — shoulders away from ears. This is the foundation of your handstand hold.'},
+    {id:'ua5',name:'Dumbbell Chest Fly',sets:'3',reps:'12–15',rest:'60s',note:'Deep stretch at the bottom — links to the chest opening in Wheel pose. Soft elbows throughout.'},
+    {id:'ua6',name:'Tricep Rope Pushdown',sets:'3',reps:'12–15',rest:'60s',note:'Elbow extension strength — key for straight-arm holds in arm balances. Keep elbows pinned to sides.'},
   ],
   'upper-b': [
-    { id: 'ub1', name: 'Single-Arm Dumbbell Row', sets: '3', reps: '10 each', rest: '75s', note: 'Full scapular range — let the shoulder reach forward at the bottom, retract fully at the top.' },
-    { id: 'ub2', name: 'Face Pull (cable, rope)', sets: '3', reps: '15', rest: '60s', note: 'Rear delt + external rotation. Pull to forehead, elbows high. Protects the shoulder joint.' },
-    { id: 'ub3', name: 'Lat Pulldown (close grip)', sets: '3', reps: '10–12', rest: '75s', note: 'Lats are the primary handstand stabiliser. Think "shoulders away from ears" as you pull.' },
-    { id: 'ub4', name: 'Reverse Fly (cable or dumbbell)', sets: '3', reps: '12–15', rest: '60s', note: 'Posterior shoulder chain — essential for safe inversions. Keep a soft elbow, hinge at hips.' },
-    { id: 'ub5', name: 'Bicep Curl (alternating dumbbell)', sets: '3', reps: '10–12', rest: '60s', note: 'Elbow flexion control — important for arm balance entries and exits.' },
+    {id:'ub1',name:'Single-Arm Dumbbell Row',sets:'3',reps:'10 each',rest:'75s',note:'Let the shoulder reach forward at the bottom, retract fully at the top. Full scapular range.'},
+    {id:'ub2',name:'Face Pull (cable, rope)',sets:'3',reps:'15',rest:'60s',note:'Pull to forehead, elbows high and wide. Rear delt and external rotation. Protects the shoulder joint long term.'},
+    {id:'ub3',name:'Lat Pulldown (close grip)',sets:'3',reps:'10–12',rest:'75s',note:'Lats are the primary handstand stabiliser. Think shoulders away from ears as you pull. Don\'t lean back excessively.'},
+    {id:'ub4',name:'Reverse Fly (cable or dumbbell)',sets:'3',reps:'12–15',rest:'60s',note:'Posterior shoulder — essential for safe inversions. Hinge at hips, soft elbows, control both ways.'},
+    {id:'ub5',name:'Bicep Curl (alternating dumbbell)',sets:'3',reps:'10–12',rest:'60s',note:'Elbow flexion control — important for arm balance entries and exits. Full range, no swinging.'},
   ],
   'lower-a': [
-    { id: 'la1', name: 'Barbell Back Squat', sets: '4', reps: '8–10', rest: '90s', note: 'Hip crease below knee — same depth as Malasana/garland pose. Keep heels down.' },
-    { id: 'la2', name: 'Romanian Deadlift (RDL)', sets: '4', reps: '10–12', rest: '90s', note: 'Slow 3-second eccentric. The primary hamstring lengthening lift. Feel the stretch at the bottom, don\'t round the back.' },
-    { id: 'la3', name: 'Bulgarian Split Squat', sets: '3', reps: '8–10 each', rest: '75s', note: 'Rear foot elevated. This stretches the hip flexor of the rear leg every single rep — like a loaded low lunge.' },
-    { id: 'la4', name: 'Leg Press (feet high)', sets: '3', reps: '12–15', rest: '75s', note: 'High foot placement = glute and hamstring emphasis. Keep knees tracking toes.' },
-    { id: 'la5', name: 'Seated Leg Curl', sets: '3', reps: '12–15', rest: '60s', note: 'Direct hamstring work — builds length and strength simultaneously.' },
-    { id: 'la6', name: 'Cable Pull-Through', sets: '3', reps: '15', rest: '60s', note: 'Hip hinge pattern + glute activation. Cable between legs, hinge forward, drive hips through. Protects lower back.' },
+    {id:'la1',name:'Barbell Back Squat',sets:'4',reps:'8–10',rest:'90s',note:'Hip crease below knee — same depth as Malasana/garland pose. Keep heels down, chest up.'},
+    {id:'la2',name:'Romanian Deadlift (RDL)',sets:'4',reps:'10–12',rest:'90s',note:'Slow 3-second eccentric — the primary hamstring lengthening lift. Feel the stretch at the bottom. Don\'t round the lower back.'},
+    {id:'la3',name:'Bulgarian Split Squat',sets:'3',reps:'8–10 each',rest:'75s',note:'Rear foot elevated on bench. Stretches the hip flexor of the rear leg on every single rep — like a loaded low lunge.'},
+    {id:'la4',name:'Leg Press (feet high)',sets:'3',reps:'12–15',rest:'75s',note:'High foot placement for glute and hamstring emphasis. Keep knees tracking over toes throughout.'},
+    {id:'la5',name:'Seated Leg Curl',sets:'3',reps:'12–15',rest:'60s',note:'Direct hamstring work — builds length and strength simultaneously. Full range.'},
+    {id:'la6',name:'Cable Pull-Through',sets:'3',reps:'15',rest:'60s',note:'Cable between legs, hinge forward, drive hips through. Hip hinge pattern and glute activation. Protects lower back.'},
   ],
   'lower-b': [
-    { id: 'lb1', name: 'Deadlift (conventional)', sets: '4', reps: '6–8', rest: '2 min', note: 'The king of posterior chain. Builds the back you need for every inversion. Brace the whole torso, not just the lower back.' },
-    { id: 'lb2', name: 'Hip Thrust (barbell or machine)', sets: '3', reps: '12–15', rest: '75s', note: 'Glute strength for a stable pelvis in all standing poses. Squeeze at the top, don\'t hyperextend the lower back.' },
-    { id: 'lb3', name: 'Reverse Lunge (dumbbell)', sets: '3', reps: '10 each', rest: '60s', note: 'The hip flexor of your stepping leg gets a deep stretch every rep. Step back, not forward — more control.' },
-    { id: 'lb4', name: 'Nordic Hamstring Curl', sets: '3', reps: '6–8 slow', rest: '90s', note: 'Eccentric hamstring strength — the most powerful way to lengthen hamstrings. Anchor feet, lower body toward floor as slowly as possible. Catch yourself if needed.' },
-    { id: 'lb5', name: 'Cable Woodchop (low to high)', sets: '3', reps: '12 each', rest: '60s', note: 'Rotational core — links directly to twisting poses in yoga.' },
-    { id: 'lb6', name: 'Single-Leg RDL (dumbbell)', sets: '3', reps: '8 each', rest: '60s', note: 'Balance + hamstring + glute. Mirrors the demands of Warrior 3. Hinge until torso is parallel, one leg extends back.' },
+    {id:'lb1',name:'Deadlift (conventional)',sets:'4',reps:'6–8',rest:'2 min',note:'Brace the whole torso before you pull. Builds the back you need for every inversion. Focus on leg drive off the floor.'},
+    {id:'lb2',name:'Hip Thrust (barbell or machine)',sets:'3',reps:'12–15',rest:'75s',note:'Squeeze glutes at the top — don\'t hyperextend the lower back. Stable pelvis in all standing poses starts here.'},
+    {id:'lb3',name:'Reverse Lunge (dumbbell)',sets:'3',reps:'10 each',rest:'60s',note:'Step back, not forward — more control. Hip flexor of the stepping leg gets a deep stretch every rep.'},
+    {id:'lb4',name:'Nordic Hamstring Curl',sets:'3',reps:'6–8 slow',rest:'90s',note:'Anchor feet, lower body toward floor as slowly as possible. Catch yourself if needed. Most powerful way to lengthen hamstrings.'},
+    {id:'lb5',name:'Cable Woodchop (low to high)',sets:'3',reps:'12 each',rest:'60s',note:'Rotational core — links directly to twisting poses in yoga. Pivot the back foot, rotate fully.'},
+    {id:'lb6',name:'Single-Leg RDL (dumbbell)',sets:'3',reps:'8 each',rest:'60s',note:'Mirrors Warrior 3. Hinge until torso parallel, one leg extends back. Balance, hamstring, and glute together.'},
   ],
   'lower-b-core': [
-    { id: 'lbc1', name: 'Plank with shoulder taps', sets: '3', reps: '30 sec', rest: '45s', note: 'Anti-rotation core. Keep hips level when tapping. Stabilises handstand entries.' },
-    { id: 'lbc2', name: 'Dead bug (slow)', sets: '3', reps: '10 each side', rest: '45s', note: 'Opposite arm and leg extend while lower back stays pressed to floor. Teaches the rib-to-hip connection that makes hollow body work.' },
-    { id: 'lbc3', name: 'Ab wheel rollout (from knees)', sets: '3', reps: '8–10', rest: '60s', note: 'Full core extension — direct handstand strength. Don\'t let your lower back collapse at the bottom.' },
-    { id: 'lbc4', name: 'Side plank with hip dip', sets: '2', reps: '30 sec each', rest: '45s', note: 'Lateral core — improves balance and stability in standing poses.' },
+    {id:'lbc1',name:'Plank with shoulder taps',sets:'3',reps:'30 sec',rest:'45s',note:'Keep hips level when tapping — resist rotation. Anti-rotation core stabilises handstand entries.'},
+    {id:'lbc2',name:'Dead bug (slow)',sets:'3',reps:'10 each side',rest:'45s',note:'Opposite arm and leg extend while lower back stays pressed to floor. Teaches the rib-to-hip connection that makes hollow body work.'},
+    {id:'lbc3',name:'Ab wheel rollout (from knees)',sets:'3',reps:'8–10',rest:'60s',note:'Don\'t let your lower back collapse at the bottom. Direct handstand core strength.'},
+    {id:'lbc4',name:'Side plank with hip dip',sets:'2',reps:'30 sec each',rest:'45s',note:'Lateral core — improves balance and stability in all standing poses.'},
   ]
 };
 
-// ===================== STORAGE =====================
-function getLog() {
-  try { return JSON.parse(localStorage.getItem('gym_log') || '{}'); } catch(e) { return {}; }
-}
-function saveLog(log) {
-  try { localStorage.setItem('gym_log', JSON.stringify(log)); } catch(e) {}
-}
-function getPullupLog() {
-  try { return JSON.parse(localStorage.getItem('pullup_log') || '[]'); } catch(e) { return []; }
-}
-function savePullupLogData(data) {
-  try { localStorage.setItem('pullup_log', JSON.stringify(data)); } catch(e) {}
-}
+function getLog() { try { return JSON.parse(localStorage.getItem('gl')||'{}'); } catch(e) { return {}; } }
+function setLog(l) { try { localStorage.setItem('gl', JSON.stringify(l)); } catch(e) {} }
+function getPU() { try { return JSON.parse(localStorage.getItem('pu')||'[]'); } catch(e) { return []; } }
+function setPU(d) { try { localStorage.setItem('pu', JSON.stringify(d)); } catch(e) {} }
 
-// ===================== RENDER EXERCISES =====================
-function renderExercises(containerId, sessionKey) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  const exercises = EXERCISES[sessionKey] || [];
+function renderExercises(containerId, key) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
   const log = getLog();
-  container.innerHTML = '';
-  exercises.forEach(ex => {
-    const logged = log[ex.id];
-    const card = document.createElement('div');
-    card.className = 'exercise-card';
-    card.innerHTML = `
-      <div class="exercise-header" onclick="toggleNote('${ex.id}')">
+  el.innerHTML = (EXERCISES[key]||[]).map(ex => {
+    const saved = log[ex.id];
+    return `<div class="exercise-card">
+      <div class="exercise-header" onclick="toggle('${ex.id}')">
         <div>
           <div class="exercise-name">${ex.name}</div>
           <div class="exercise-chips">
             <span class="chip">${ex.sets} sets</span>
             <span class="chip">${ex.reps}</span>
             <span class="chip">Rest ${ex.rest}</span>
-            ${logged ? '<span class="chip highlight">✓ Logged</span>' : ''}
+            ${saved?'<span class="chip highlight">✓ Logged</span>':''}
           </div>
         </div>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8c8c4" stroke-width="2" id="arrow-${ex.id}"><path d="M6 9l6 6 6-6"/></svg>
+        <svg id="arr-${ex.id}" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8c8c4" stroke-width="2" style="flex-shrink:0;transition:transform 0.2s"><path d="M6 9l6 6 6-6"/></svg>
       </div>
       <div class="exercise-note" id="note-${ex.id}">${ex.note}</div>
-      <div class="log-section" id="log-${ex.id}" style="display:none">
-        <div class="log-row">
-          <div class="log-field"><label>Weight (kg)</label><input type="number" id="w-${ex.id}" placeholder="${logged ? logged.weight : '—'}" inputmode="decimal" value="${logged ? logged.weight : ''}"></div>
-          <div class="log-field"><label>Reps done</label><input type="number" id="r-${ex.id}" placeholder="${logged ? logged.reps : '—'}" inputmode="numeric" value="${logged ? logged.reps : ''}"></div>
-          <div class="log-field"><label>Notes</label><input type="text" id="n-${ex.id}" placeholder="easy / hard" value="${logged ? (logged.notes || '') : ''}"></div>
+      <div class="log-section" id="log-${ex.id}">
+        <div style="display:grid;grid-template-columns:28px 1fr 1fr 1fr;gap:6px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--paper-warm)">
+          <div></div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);text-align:center">KG</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);text-align:center">REPS</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);text-align:center">FEEL</div>
         </div>
-        <button class="log-save-btn" onclick="saveExercise('${ex.id}', '${ex.name}')">Save</button>
-        <div class="log-saved-badge" id="saved-${ex.id}">✓ Saved</div>
+        ${Array.from({length:parseInt(ex.sets)||4},(_,i)=>{const s=saved&&saved.sets&&saved.sets[i]?saved.sets[i]:{};return `<div style="display:grid;grid-template-columns:28px 1fr 1fr 1fr;gap:6px;margin-bottom:6px;align-items:center"><div style="font-size:11px;font-weight:600;color:var(--accent);text-align:center">${i+1}</div><input type="number" id="w-${ex.id}-${i}" placeholder="—" inputmode="decimal" value="${s.w||''}" style="background:var(--paper-warm);border:1.5px solid transparent;border-radius:8px;padding:8px 4px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:var(--ink);width:100%;-webkit-appearance:none;text-align:center"><input type="number" id="r-${ex.id}-${i}" placeholder="—" inputmode="numeric" value="${s.r||''}" style="background:var(--paper-warm);border:1.5px solid transparent;border-radius:8px;padding:8px 4px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:var(--ink);width:100%;-webkit-appearance:none;text-align:center"><input type="text" id="n-${ex.id}-${i}" placeholder="—" value="${s.n||''}" style="background:var(--paper-warm);border:1.5px solid transparent;border-radius:8px;padding:8px 4px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);width:100%;-webkit-appearance:none;text-align:center"></div>`;}).join('')}
+        <button class="log-save-btn" onclick="saveEx('${ex.id}','${ex.name}',${parseInt(ex.sets)||4})">Save all sets</button>
+        <div class="saved-badge" id="sb-${ex.id}">✓ Saved</div>
       </div>
-    `;
-    container.appendChild(card);
-  });
+    </div>`;
+  }).join('');
 }
 
-function toggleNote(id) {
-  const note = document.getElementById('note-' + id);
-  const logSec = document.getElementById('log-' + id);
-  const arrow = document.getElementById('arrow-' + id);
-  const isOpen = note.classList.contains('open');
-  note.classList.toggle('open', !isOpen);
-  logSec.style.display = isOpen ? 'none' : 'block';
-  arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+function toggle(id) {
+  const note = document.getElementById('note-'+id);
+  const log = document.getElementById('log-'+id);
+  const arr = document.getElementById('arr-'+id);
+  const open = note.classList.contains('open');
+  note.classList.toggle('open', !open);
+  log.style.display = open ? 'none' : 'block';
+  arr.style.transform = open ? '' : 'rotate(180deg)';
 }
 
-function saveExercise(id, name) {
-  const weight = document.getElementById('w-' + id).value;
-  const reps = document.getElementById('r-' + id).value;
-  const notes = document.getElementById('n-' + id).value;
-  const log = getLog();
-  log[id] = { name, weight, reps, notes, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) };
-  saveLog(log);
-  const badge = document.getElementById('saved-' + id);
-  badge.classList.add('show');
-  setTimeout(() => badge.classList.remove('show'), 2000);
+function saveEx(id, name, numSets) {
+  const l = getLog();
+  const sets = [];
+  for (let i = 0; i < numSets; i++) {
+    sets.push({
+      w: (document.getElementById("w-"+id+"-"+i)||{}).value||"",
+      r: (document.getElementById("r-"+id+"-"+i)||{}).value||"",
+      n: (document.getElementById("n-"+id+"-"+i)||{}).value||"",
+    });
+  }
+  l[id] = { name, sets, d: new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short"}) };
+  setLog(l);
+  const sb = document.getElementById("sb-"+id);
+  sb.classList.add("show");
+  setTimeout(()=>sb.classList.remove("show"),2000);
   updateStats();
-  renderProgressLog();
 }
 
-function savePullupLog() {
+function savePullups() {
   const max = document.getElementById('pu-max').value;
-  const sets = document.getElementById('pu-sets').value;
-  const week = document.getElementById('pu-week').value;
   if (!max) return;
-  const data = getPullupLog();
-  data.push({ max: parseInt(max), sets: parseInt(sets) || 5, week: parseInt(week) || 1, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
-  savePullupLogData(data);
-  const badge = document.getElementById('pu-saved');
-  badge.classList.add('show');
-  setTimeout(() => badge.classList.remove('show'), 2000);
+  const data = getPU();
+  data.push({
+    max: parseInt(max),
+    sets: parseInt(document.getElementById('pu-sets').value)||5,
+    week: parseInt(document.getElementById('pu-week').value)||1,
+    d: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'})
+  });
+  setPU(data);
+  const sb = document.getElementById('pu-saved');
+  sb.classList.add('show');
+  setTimeout(()=>sb.classList.remove('show'),2000);
   updateStats();
-  renderPullupProgress();
 }
 
-// ===================== PROGRESS RENDERING =====================
-function renderProgressLog() {
-  const log = getLog();
-  const container = document.getElementById('weight-log-display');
-  const entries = Object.values(log);
-  if (!entries.length) {
-    container.innerHTML = '<div class="progress-empty"><div class="progress-empty-icon">📋</div><p>Tap any exercise in a session and log your weight. It\'ll show up here.</p></div>';
-    return;
-  }
-  container.innerHTML = entries.map(e => `
-    <div class="log-entry">
-      <div class="log-entry-header">
-        <div class="log-entry-name">${e.name}</div>
-        <div class="log-entry-date">${e.date}</div>
-      </div>
-      <div class="log-entry-values">
-        ${e.weight ? `<div class="log-entry-val"><strong>${e.weight}kg</strong></div>` : ''}
-        ${e.reps ? `<div class="log-entry-val"><strong>${e.reps}</strong> reps</div>` : ''}
-        ${e.notes ? `<div class="log-entry-val">${e.notes}</div>` : ''}
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderPullupProgress() {
-  const data = getPullupLog();
-  const container = document.getElementById('pullup-progress-display');
-  if (!data.length) {
-    container.innerHTML = '<div style="font-size:13px;color:var(--ink-light);text-align:center;padding:12px 0;">Log your pull-ups in Upper B to track progress here.</div>';
-    return;
-  }
-  const latest = data[data.length - 1].max;
-  const pct = Math.min(100, Math.round((latest / 10) * 100));
-  container.innerHTML = `
-    <div style="margin-bottom:16px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-        <span style="font-size:13px;color:var(--ink-light)">Current max</span>
-        <span style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--ink)">${latest} <span style="font-size:16px;color:var(--ink-light)">/ 10</span></span>
-      </div>
-      <div style="background:var(--paper-warm);border-radius:20px;height:8px;overflow:hidden">
-        <div style="background:var(--accent);height:100%;width:${pct}%;border-radius:20px;transition:width 0.4s ease"></div>
-      </div>
-    </div>
-    ${data.map(e => `
-      <div class="pullup-week-row">
-        <div class="pullup-week-label">Week ${e.week}</div>
-        <div class="pullup-week-target">${e.date}</div>
-        <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink)">${e.max}</div>
-      </div>
-    `).join('')}
-  `;
-}
-
-// ===================== STATS =====================
 function updateStats() {
-  const log = getLog();
-  const count = Object.keys(log).length;
-  document.getElementById('stat-sessions').textContent = count;
-  const puData = getPullupLog();
-  if (puData.length) {
-    const latest = puData[puData.length - 1].max;
-    document.getElementById('stat-pullups').textContent = latest;
+  const l = getLog();
+  document.getElementById('stat-sessions').textContent = Object.keys(l).length;
+  const pu = getPU();
+  if (pu.length) document.getElementById('stat-pullups').textContent = pu[pu.length-1].max;
+}
+
+function renderProgress() {
+  const pu = getPU();
+  const puEl = document.getElementById('pullup-display');
+  if (!pu.length) {
+    puEl.innerHTML = '<div class="empty-state"><div class="icon">🎯</div><p>Log your pull-ups in Upper B and your progress will appear here.</p></div>';
+  } else {
+    const latest = pu[pu.length-1].max;
+    const pct = Math.min(100, Math.round(latest/10*100));
+    puEl.innerHTML = `<div class="pullup-card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+        <span style="font-size:13px;color:var(--ink-light)">Current max</span>
+        <span style="font-family:'DM Serif Display',serif;font-size:32px">${latest}<span style="font-size:16px;color:var(--ink-light)"> / 10</span></span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+      ${pu.map(e=>`<div class="pullup-row"><div><div class="pullup-label">Week ${e.week}</div><div class="pullup-date">${e.d}</div></div><div class="pullup-val">${e.max}</div></div>`).join('')}
+    </div>`;
+  }
+  const l = getLog();
+  const wEl = document.getElementById('weight-display');
+  const entries = Object.values(l);
+  if (!entries.length) {
+    wEl.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>Tap any exercise in a session to expand it and log your weights.</p></div>';
+  } else {
+    wEl.innerHTML = entries.map(e=>{
+      const setsHtml = e.sets ? e.sets.map((s,i)=> s.w||s.r ? `<div style="display:grid;grid-template-columns:28px 1fr 1fr 1fr;gap:6px;margin-top:6px;align-items:center"><div style="font-size:11px;font-weight:600;color:var(--accent);text-align:center">${i+1}</div><div style="font-size:13px;color:var(--ink);font-weight:500;text-align:center">${s.w?s.w+"kg":"—"}</div><div style="font-size:13px;color:var(--ink);font-weight:500;text-align:center">${s.r?s.r+" reps":"—"}</div><div style="font-size:13px;color:var(--ink-light);text-align:center">${s.n||"—"}</div></div>` : "").join("") : "";
+      return `<div class="log-entry"><div class="log-entry-header"><div class="log-entry-name">${e.name}</div><div class="log-entry-date">${e.d}</div></div>${setsHtml}</div>`;
+    }).join("");
   }
 }
 
-// ===================== NAV =====================
-let currentSession = null;
+function clearAll() {
+  if (confirm('Clear all logged data?')) {
+    localStorage.removeItem('gl');
+    localStorage.removeItem('pu');
+    document.getElementById('stat-sessions').textContent = '0';
+    document.getElementById('stat-pullups').textContent = '4–6';
+    renderProgress();
+  }
+}
 
 function openSession(key) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + key).classList.add('active');
-  renderExercises('exercises-' + key, key);
-  if (key === 'lower-b') renderExercises('exercises-lower-b-core', 'lower-b-core');
-  currentSession = key;
-  window.scrollTo(0, 0);
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+key).classList.add('active');
+  renderExercises('ex-'+key, key);
+  if (key==='lower-b') renderExercises('ex-lower-b-core','lower-b-core');
+  window.scrollTo(0,0);
 }
 
 function goHome() {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-home').classList.add('active');
-  currentSession = null;
-  window.scrollTo(0, 0);
+  window.scrollTo(0,0);
 }
 
 function switchTab(tab) {
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('nav-' + tab).classList.add('active');
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  if (tab === 'home') {
-    document.getElementById('screen-home').classList.add('active');
-  } else if (tab === 'progress') {
-    document.getElementById('screen-progress').classList.add('active');
-    renderProgressLog();
-    renderPullupProgress();
-  }
-  window.scrollTo(0, 0);
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nav-'+tab).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+tab==='home'?'screen-home':'screen-progress').classList.add('active');
+  if (tab==='progress') renderProgress();
+  window.scrollTo(0,0);
 }
 
-function clearAllLogs() {
-  if (confirm('Clear all logged weights and pull-up data?')) {
-    localStorage.removeItem('gym_log');
-    localStorage.removeItem('pullup_log');
-    updateStats();
-    renderProgressLog();
-    renderPullupProgress();
-    document.getElementById('stat-pullups').textContent = '4–6';
-  }
-}
-
-// ===================== INIT =====================
 updateStats();
 </script>
 </body>
